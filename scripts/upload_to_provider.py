@@ -9,7 +9,9 @@ def main():
 
 def upload_to_provider(url: str, file: str) -> typing.Any:
     with open(file, 'rb') as f:
-        r = requests.post(url, files={'file': f})
+        r = requests.post(url, files={'file': f}, timeout=10)
+        if r.status_code != 200:
+            raise Exception("Failed to upload to provider")
         return r.json()
 
 def get_cdn_url(upload_response: typing.Any) -> str:

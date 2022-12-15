@@ -13,8 +13,10 @@ def main():
 def get_manifest_for_version(man: typing.Any, wanted_version: str) -> typing.Any:
     for version in man['versions']:
         if version['id'] == wanted_version:
-            version_manifest = requests.get(version['url']).json()
-            return version_manifest
+            r = requests.get(version['url'], timeout=10)
+            if r.status_code != 200:
+                raise Exception("Failed to get version manifest")
+            return r.json()
     raise Exception("Version not found")
 
 if __name__ == '__main__':

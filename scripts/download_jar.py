@@ -14,7 +14,12 @@ def main():
 def download_jar(man: typing.Any, dest_path: str, version: str, type: str):
     version_manifest = get_manifest_for_version(man, version)
     with open(dest_path, 'wb') as f:
-        f.write(requests.get(version_manifest['downloads'][type]['url']).content)
+        r = requests.get(version_manifest['downloads'][type]['url'], timeout=10)
+        if r.status_code != 200:
+            raise Exception("Failed to download " + type)
+        if len(r.content) != version_manifest['downloads'][type]['size']:
+            raise Exception("Downloaded" + type + "is not the correct size")
+        f.write(r.content)
 
 if __name__ == '__main__':
     main()

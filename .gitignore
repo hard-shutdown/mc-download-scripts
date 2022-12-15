@@ -172,3 +172,4 @@ poetry.toml
 
 
 *.json
+*.zip
