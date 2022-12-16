@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <mc version>"
+    exit 1
+fi
 scriptsdir=$(pwd)/scripts
 zipfname=$(python3 -c "print('$1'.replace('.', '-') + '_client.zip')")
 echo "Downloading client and libraries to $zipfname..."

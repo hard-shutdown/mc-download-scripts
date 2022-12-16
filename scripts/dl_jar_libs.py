@@ -19,12 +19,12 @@ def main():
     tmpdir = (os.getenv("TEMP") if os.name=="nt" else "/tmp") + "/mc-dl--/" + str(random.uniform(1, 100000))
     Path(tmpdir).mkdir(parents=True, exist_ok=True)
     os.chdir(tmpdir)
-    with open(sys.argv[1].replace(".", "-") + "_manifest.json", "w", encoding='utf8') as f:
+    with open(sys.argv[1] + "_manifest.json", "w", encoding='utf8') as f:
         f.write(str(version_manifest))
     dl_all_libs(libs, 'libraries', True)
     print("Downloading " + sys.argv[1] + " client jar")
-    download_jar(man, sys.argv[1].replace(".", "-") + "_client.jar", sys.argv[1], "client")
-    with zipfile.ZipFile(actualdir + "/" + sys.argv[1].replace(".", "-") + "_client.zip", "w", compression=zipfile.ZIP_BZIP2, compresslevel=9) as zf:
+    download_jar(man, sys.argv[1] + "_client.jar", sys.argv[1], "client")
+    with zipfile.ZipFile(actualdir + "/" + sys.argv[1] + "_bundle.zip", "w", compression=zipfile.ZIP_BZIP2, compresslevel=9) as zf:
         for file in os.listdir(tmpdir):
             zf.write(file)
     os.chdir(actualdir)
