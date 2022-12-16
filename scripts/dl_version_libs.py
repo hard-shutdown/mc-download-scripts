@@ -1,5 +1,8 @@
+import os
 import typing
 import requests
+from pathlib import Path
+from multiprocessing.pool import ThreadPool
 
 def get_lib(man: typing.Any, name: str) -> typing.Any:
     for lib in man['libraries']:
@@ -13,8 +16,10 @@ def get_all_libs(man: typing.Any) -> list:
     return libs
 
 def dl_lib(url: str, dest_path: str, size: int, verbose: bool) -> None:
-    if verbose:
-        print("Downloading " + dest_path)
+    try:
+        Path(os.path.dirname(dest_path)).mkdir(parents=True, exist_ok=True)
+    except:
+        pass
     r = requests.get(url, timeout=10)
     if r.status_code != 200:
         raise Exception("Failed to download library")
@@ -22,13 +27,20 @@ def dl_lib(url: str, dest_path: str, size: int, verbose: bool) -> None:
         raise Exception("Downloaded library is not the correct size")
     with open(dest_path, 'wb') as f:
         f.write(r.content)
+        if verbose:
+            print("Downloaded " + dest_path)
 
-def dl_all_libs(libs: list, verbose: bool) -> typing.Any:
+def dl_all_libs(libs: list, prefix: str, verbose: bool) -> typing.Any:
+    arglist = []
+    if verbose:
+        print("Downloading " + str(len(libs)) + " libraries")
+    pool = ThreadPool(len(libs))
     for lib in libs:
         if 'artifact' in lib['downloads']:
             artifacts = lib['downloads']['artifact']
-            dl_lib(artifacts['url'], str(artifacts['path']).split("/")[len(str(artifacts['path']).split("/")) - 1], artifacts['size'], verbose)
+            arglist.append((artifacts['url'], prefix + '/' + artifacts['path'], artifacts['size'], verbose))
         elif 'classifiers' in lib['downloads']:
             classifiers = lib['downloads']['classifiers']
             for classifier in classifiers:
-                dl_lib(classifiers[classifier]['url'], str(classifiers[classifier]['path']).split("/")[len(str(classifiers[classifier]['path']).split("/")) - 1], classifiers[classifier]['size'], verbose)
+                arglist.append((classifiers[classifier]['url'], prefix + '/' + classifiers[classifier]['path'], classifiers[classifier]['size'], verbose))
+    pool.starmap(dl_lib, arglist)
