@@ -26,7 +26,7 @@ def get_url_for_asset(hash: str) -> str:
 def dl_asset(url: str, dest_path: str, size: int, verbose: bool) -> None:
     try:
         Path(os.path.dirname(dest_path)).mkdir(parents=True, exist_ok=True)
-    except:
+    except Exception:
         pass
     r = requests.get(url, timeout=10)
     if r.status_code != 200:
@@ -44,5 +44,5 @@ def dl_all_assets(objects: list, prefix: str, verbose: bool) -> typing.Any:
         print("Downloading " + str(len(objects)) + " libraries")
     pool = ThreadPool(len(objects))
     for obj in objects:
-        arglist.append((get_url_for_asset(obj["hash"], prefix + '/' + hash[:2] + "/" + hash, obj['size'], verbose))
+        arglist.append((get_url_for_asset(obj["hash"]), prefix + '/' + obj['hash'][:2] + "/" + hash, obj['size'], verbose))
     pool.starmap(dl_asset, arglist)
