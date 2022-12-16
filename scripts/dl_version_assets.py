@@ -1,6 +1,7 @@
 import os
 import typing
 import requests
+import json
 from pathlib import Path
 from multiprocessing.pool import ThreadPool
 
@@ -10,13 +11,13 @@ def get_asset_by_name(man: typing.Any, name: str) -> typing.Any:
     
 def get_asset_by_hash(man: typing.Any, hash: str) -> typing.Any:
     for obj in man['objects']:
-        if obj['hash'] == hash:
-            return obj
+        if man['objects'][obj]['hash'] == hash:
+            return json.loads('{"hash":"' + man['objects'][obj]['hash'] + '","size":' + str(man['objects'][obj]['size']) + ',"name":"' + obj + '"}')
 
 def get_all_assets(man: typing.Any) -> list:
     objs = []
     for obj in man['objects']:
-        objs.append(obj)
+        objs.append(man['objects'][obj])
     return objs
 
 def get_url_for_asset(hash: str) -> str:
@@ -43,5 +44,5 @@ def dl_all_assets(objects: list, prefix: str, verbose: bool) -> typing.Any:
         print("Downloading " + str(len(objects)) + " libraries")
     pool = ThreadPool(len(objects))
     for obj in objects:
-        arglist.append((get_url_for_asset(obj["hash"]), prefix + '/' + hash[:2] + "/" + hash, obj['size'], verbose))
+        arglist.append((get_url_for_asset(obj["hash"], prefix + '/' + hash[:2] + "/" + hash, obj['size'], verbose))
     pool.starmap(dl_asset, arglist)
