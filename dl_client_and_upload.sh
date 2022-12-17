@@ -4,7 +4,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 scriptsdir=$(pwd)/scripts
-zipfname=$(python3 -c "print('$1'.replace('.', '-') + '_client.zip')")
+zipfname=$(python3 -c "print('$1' + '_bundle.zip')")
 echo "Downloading client and libraries to $zipfname..."
 python3 $scriptsdir/dl_jar_libs.py $1
 echo "Uploading $zipfname to provider..."

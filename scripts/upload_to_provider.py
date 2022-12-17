@@ -5,11 +5,11 @@ import re
 import sys
 
 def main():
-    print(get_cdn_url(upload_to_provider('https://api.openload.cc/upload', sys.argv[1])))
+    print(get_cdn_url(upload_to_provider('https://api.lolabits.se/upload', sys.argv[1])))
 
 def upload_to_provider(url: str, file: str) -> typing.Any:
     with open(file, 'rb') as f:
-        r = requests.post(url, files={'file': f}, timeout=10)
+        r = requests.post(url, files={'file': f}, timeout=300) # Max 3 minutes to upload
         if r.status_code != 200:
             raise Exception("Failed to upload to provider")
         return r.json()
