@@ -54,6 +54,6 @@ def dl_all_assets(objects: list, prefix: str, verbose: bool) -> typing.Any:
     pool = ThreadPool(len(objects))
     for obj in objects:
         arglist.append((get_url_for_asset(obj["hash"]), prefix + '/' + obj['hash'][:2] + "/" + obj['hash'], obj['size'], verbose))
-    chunked = list(divide_chunks(arglist, 50))
+    chunked = list(divide_chunks(arglist, 100))
     for chunk in chunked:
         pool.starmap(dl_asset, chunk)
